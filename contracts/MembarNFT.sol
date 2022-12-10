@@ -9,9 +9,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
-    constructor() ERC721("MemberNFT","MEMN"){
+    constructor() ERC721("MemberNFT","MEMN"){}
 
-    }
     /**
      * - @dev
      * override
@@ -23,6 +22,7 @@ contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
     ) internal override(ERC721,ERC721Enumerable) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
+
     /**
      * - @dev
      * override
@@ -30,6 +30,7 @@ contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
     function _burn(uint256 tokenId) internal override(ERC721,ERC721URIStorage) {
         super._burn(tokenId);
     }
+
     /**
      * - @dev
      * override
@@ -37,6 +38,7 @@ contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
     function supportsInterface(bytes4 interfaceId) public view override(ERC721,ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
+
     /**
      * - @dev
      * override
@@ -44,6 +46,4 @@ contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
     function tokenURI(uint256 tokenId) public view override(ERC721,ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
-
-
 }
