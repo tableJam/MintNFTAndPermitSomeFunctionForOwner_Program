@@ -9,8 +9,25 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
+    
+    using Counters for Counters.Counter;
+    Counters.Counter private tokenIDs;
+
     constructor() ERC721("MemberNFT","MEMN"){}
 
+    event tokenURIchange(address indexed to, uint256 tokenID, string uri);
+
+    /**
+     * - @dev
+     * permitted is only Owner;
+     */
+    function mintNFT(address to, string calldata uri) external onlyOwner {
+       tokenIDs.increment();
+       uint newTokenId = tokenIDs.current();
+       _mint(to, newTokenId);
+       _setTokenURI(newTokenId, uri);
+       emit tokenURIchange(to, newTokenId, uri);
+    }
     /**
      * - @dev
      * override
