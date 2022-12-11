@@ -16,7 +16,7 @@ const main = async() => {
    const memberNFT = await MemberNFT.deploy();
    await memberNFT.deployed();
 
-   console.log("contract is deployed; ",`https://goerli.etherscan.io/${memberNFT.address}`);
+   console.log("🎉 contract is deployed; ",`https://goerli.etherscan.io/address/${memberNFT.address}`);
 
 
    let tx = await memberNFT.mintNFT(addr1, tokenURI1);
@@ -39,8 +39,14 @@ const main = async() => {
    await tx.wait();
    console.log("NFT TOKEN 5 is minted");
 
+
+   for(let i=1;i<=5;i++) {
+    console.log("💥",await memberNFT.ownerOf(i))
+   }
+
    console.log("fin")
 };
+
 
 
 const deploy = async () => {

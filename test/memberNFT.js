@@ -9,8 +9,7 @@ describe("MemberNFT",function(){
     const symbol = "MEMN";
     let owner;
     const tokenURI1 = "helloworld";
-    const tokenURI2 = "solidity"
-    let tokenId;
+    const tokenURI2 = "solidity";
     let add1;
 
     beforeEach(async function(){
