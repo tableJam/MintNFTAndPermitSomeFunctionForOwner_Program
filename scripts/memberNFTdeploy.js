@@ -41,7 +41,12 @@ const main = async() => {
 
 
    for(let i=1;i<=5;i++) {
-    console.log("💥",await memberNFT.ownerOf(i))
+    console.log("                   ")
+    console.log("🔥",i,"is owned by")
+    console.log("🤩 ",await memberNFT.ownerOf(i))
+    console.log("🎉 " , await memberNFT.tokenURI(i));
+    console.log("                   ")
+    
    }
 
    console.log("fin")
@@ -50,6 +55,7 @@ const main = async() => {
 
 
 const deploy = async () => {
+
     try{
         await main();
         process.exit(1);
@@ -59,6 +65,7 @@ const deploy = async () => {
         process.exit(0);
 
     }
+
 }
 
 
