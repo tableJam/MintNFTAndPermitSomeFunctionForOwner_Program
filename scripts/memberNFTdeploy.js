@@ -42,16 +42,14 @@ const main = async() => {
 
    for(let i=1;i<=5;i++) {
     console.log("                   ")
-    console.log("🔥",i,"is owned by")
-    console.log("🤩 ",await memberNFT.ownerOf(i))
+    console.log("🔥 ",i," is owned by")
+    console.log("🤩 ",await memberNFT.ownerOf(i));
     console.log("🎉 " , await memberNFT.tokenURI(i));
     console.log("                   ")
-    
    }
 
    console.log("fin")
 };
-
 
 
 const deploy = async () => {
@@ -59,11 +57,9 @@ const deploy = async () => {
     try{
         await main();
         process.exit(1);
-
     }catch{
         console.log("fail");
         process.exit(0);
-
     }
 
 }

@@ -39,7 +39,7 @@ contract MemberNFT is ERC721Enumerable, ERC721URIStorage ,Ownable{
     ) internal override(ERC721,ERC721Enumerable) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
-
+    
     /**
      * - @dev
      * override
