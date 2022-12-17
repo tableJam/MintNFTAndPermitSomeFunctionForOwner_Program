@@ -48,7 +48,7 @@ contract TokenBank{
     } 
 
     /// @dev return address => token
-       function blanceOf(address account) public view returns(uint256) {
+       function balanceOf(address account) public view returns(uint256) {
         return _balances[account];
     }
 
