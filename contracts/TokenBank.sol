@@ -2,12 +2,17 @@
 
 pragma solidity ^0.8.9;
 
+interface MemberNFT{
+    function balanceOf(address owner) external view returns (uint256);
+}
+
 contract TokenBank{
     // state params;
+    MemberNFT public memberNFT; 
     string private name;
     string private symbol;
     uint256 constant totalSpply = 1000;
-    uint256 private bankTotakDeposit;
+    uint256 private bankTotalDeposit;
     address public owner;
     mapping(address => uint256) private _balances;
     mapping(address => uint256) private _tokenBankBalances;
@@ -26,11 +31,22 @@ contract TokenBank{
         uint256 amount
     );
 
-    constructor(string memory name_, string memory symbol_) {
+    modifier onlyMember(address owner_) {
+        require(memberNFT.balanceOf(owner_)>0, "you are not member");
+        _;
+    }
+
+    modifier notOwner() {
+        require(msg.sender != owner, "you can not do this");
+        _;
+    }
+
+    constructor(string memory name_, string memory symbol_, address nftContract) {
         name = name_;
         symbol = symbol_;
         owner = msg.sender;
         _balances[owner] = totalSpply;
+        memberNFT = MemberNFT(nftContract);
     }
 
     /// @dev return token name
@@ -51,5 +67,56 @@ contract TokenBank{
        function balanceOf(address account) public view returns(uint256) {
         return _balances[account];
     }
+
+    /// @dev tranfar token
+    function transfer(address to, uint amount) onlyMember(msg.sender) public {
+        address from = msg.sender;
+        if(from == owner) {
+            require(balanceOf(from)-bankTotalDeposit >= amount, "grater than you have");
+        }
+        _transfer(from,to,amount);
+    }
+    function _transfer(address from, address to, uint256 amount) internal{
+        require(to != address(0), "address you sent token is not exist");
+        uint256 senderBalance = balanceOf(from);
+        require(senderBalance >= amount, "you transfer token more than you have");
+        _balances[from] = senderBalance - amount;
+        _balances[to] += amount;
+        emit transferToken(from, to, amount);
+    }
+    /// @dev return sum of token this contract have
+    function bankTokenBalances() public view returns (uint256) {
+        return bankTotalDeposit;
+    }
+    /// @dev return sum of token args account have in this constract
+    function bankBalanceOf(address account) public view returns (uint256) {
+        return _tokenBankBalances[account];
+    }
+    /// @dev deposit token in this contract
+    function deposit(uint256 amount) public  onlyMember(msg.sender) notOwner{
+        address from = msg.sender;
+        address to = owner;
+
+        _transfer(from, to, amount);
+        bankTotalDeposit += amount;
+        _tokenBankBalances[from] += amount;
+        emit tokenDeposit(from,amount);
+    }
+
+    function withdraw(uint256 amount) public onlyMember(msg.sender) notOwner{
+        address to = msg.sender;
+        address from = owner;
+        uint256 toTokenbankBalances = _tokenBankBalances[to];
+        require(toTokenbankBalances>=amount,"exceed amount of token you deposit in this contract");
+        _transfer(from, to, amount);
+        _tokenBankBalances[to] = toTokenbankBalances - amount;
+        bankTotalDeposit -= amount;
+        emit tokenWithdraw(to,amount);
+    } 
+
+
+
+
+
 
 }
