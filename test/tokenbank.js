@@ -2,7 +2,7 @@ const {ethers} = require('hardhat');
 const {expect} = require("chai");
 
 describe('tokenBank', () => {
-    let name = "tokenBank";;
+    let name = "tokenBank";
     let symbol = "TB"
     let TokenBank;
     let tokenBank;
@@ -14,7 +14,7 @@ describe('tokenBank', () => {
     beforeEach(async ()=>{
         [owner,add1,add2] = await ethers.getSigners()
         TokenBank = await ethers.getContractFactory("TokenBank")
-        tokenBank = await TokenBank.deploy(name,symbol)
+        tokenBank = await TokenBank.deploy(name,symbol,)
         await tokenBank.deployed()
     });
 
@@ -87,6 +87,34 @@ describe('tokenBank', () => {
             await tokenBank.connect(add1).deposit(100);
             await expect(tokenBank.connect(add1).withdraw(400)).to.be.revertedWith("exceed amount of token you deposit in this contract");
         })
+        it("owner user should be able to deposit", async () => {
+            const MemberNFT = await ethers.getContractFactory('MembaeNFT');
+            const memberNFT = await MemberNFT.deploy();
+            await memberNFT.deployed();
+
+            await memberNFT.mintNFT(add1.address,'helloworld')
+            await tokenBank.connect(add1).deposit(100)
+            expect(await tokenBank.bankBalanceOf(add1.address)).to.eq(100)
+        })
+        it('not owenr user should not be able to deposit', async () => {
+ 
+
+            await expect(tokenBank.connect(add2).deposit(100)).to.be.revertedWith('you are not member');
+        })
+        it('owner should not be able to deposit', async () => {
+            expect(await tokenBank.deposit(100)).to.be.revertedWith('you can not do this');
+        })
+        it('owner should not transfer token grater than having' , async () => {
+            await tokenBank.connect(add1).deposit(100)
+            await expect(tokenBank.transfer(add2.address,await tokenBank.balanceOf(owner.address))).to.be.revertedWith('you transfer token more than you have');
+        })
+        it('owner should be able to tranfer token smaller than have', async () => {
+            await tokenBank.connect(add1).deposit(100);
+            const ownerToken = await tokenBank.balanceOf(owner.address)-100;
+            await tokenBank.transfer(add2.address,ownerToken);
+            expect(await tokenBank.balanceOf(add2.address)).to.eq(ownerToken);
+        })
+
     })
     
 });

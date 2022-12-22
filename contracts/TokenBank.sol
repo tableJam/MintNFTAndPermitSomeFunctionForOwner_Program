@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.9;
 
-interface MemberNFT{
+interface MNFT{
     function balanceOf(address owner) external view returns (uint256);
 }
 
 contract TokenBank{
     // state params;
-    MemberNFT public memberNFT; 
+    MNFT public memberNFT; 
     string private name;
     string private symbol;
     uint256 constant totalSpply = 1000;
@@ -31,7 +31,8 @@ contract TokenBank{
         uint256 amount
     );
 
-    modifier onlyMember(address owner_) {
+    modifier onlyMember() {
+        address owner_  = msg.sender;
         require(memberNFT.balanceOf(owner_)>0, "you are not member");
         _;
     }
@@ -41,12 +42,12 @@ contract TokenBank{
         _;
     }
 
-    constructor(string memory name_, string memory symbol_, address nftContract) {
+    constructor(string memory name_, string memory symbol_, address nftContract_) {
         name = name_;
         symbol = symbol_;
         owner = msg.sender;
         _balances[owner] = totalSpply;
-        memberNFT = MemberNFT(nftContract);
+        memberNFT = MNFT(nftContract_);
     }
 
     /// @dev return token name
@@ -69,7 +70,7 @@ contract TokenBank{
     }
 
     /// @dev tranfar token
-    function transfer(address to, uint amount) onlyMember(msg.sender) public {
+    function transfer(address to, uint amount) onlyMember public {
         address from = msg.sender;
         if(from == owner) {
             require(balanceOf(from)-bankTotalDeposit >= amount, "grater than you have");
@@ -93,7 +94,7 @@ contract TokenBank{
         return _tokenBankBalances[account];
     }
     /// @dev deposit token in this contract
-    function deposit(uint256 amount) public  onlyMember(msg.sender) notOwner{
+    function deposit(uint256 amount) public  onlyMember notOwner{
         address from = msg.sender;
         address to = owner;
 
@@ -103,7 +104,7 @@ contract TokenBank{
         emit tokenDeposit(from,amount);
     }
 
-    function withdraw(uint256 amount) public onlyMember(msg.sender) notOwner{
+    function withdraw(uint256 amount) public onlyMember notOwner{
         address to = msg.sender;
         address from = owner;
         uint256 toTokenbankBalances = _tokenBankBalances[to];
